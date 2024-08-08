@@ -6,4 +6,8 @@ public class Start {
             new main.MainFrame("Magic-Chess").setVisible(true);
         });
     }
+    
+    public Start() {
+        new main.MainFrame("Magic-Chess").setVisible(true);
+    }
 }

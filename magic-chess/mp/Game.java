@@ -9,6 +9,7 @@ import main.Menu;
 public class Game extends JPanel {
     final private MainFrame owner;
     private Font font;
+    private Square[][] square;
     
     public Game(MainFrame owner) {
         super();
@@ -20,20 +21,19 @@ public class Game extends JPanel {
         setBounds(0, 0, owner.getScreenWidth(), owner.getScreenHeight());
         setLayout(new BorderLayout());
         
-        JLabel contentPanel = new JLabel();
-        contentPanel.setIcon(owner.resizedImageIcon("assets/gfx/menubackground.png", owner.getScreenWidth(), owner.getScreenHeight()));
-        contentPanel.setLayout(new BorderLayout());
-        add(contentPanel);
+        JPanel contentPanel = new JPanel();
+        contentPanel.setLayout(new GridLayout(8,8));
+        contentPanel.setBorder(BorderFactory.createEmptyBorder(owner.getScreenHeight()/10, (owner.getScreenWidth()-owner.getScreenHeight())/2+(owner.getScreenHeight()/10), owner.getScreenHeight()/10, (owner.getScreenWidth()-owner.getScreenHeight())/2+(owner.getScreenHeight()/10)));
         
-        try {
-            font = Font.createFont(Font.TRUETYPE_FONT, new File("assets/fonts/Yusei_Magic/YuseiMagic-Regular.ttf")).deriveFont(128f);
-        } catch(IOException| FontFormatException e) {}
-                
-        JLabel titleText = new JLabel(" Multiplayer", SwingConstants.LEFT);
-        titleText.setFont(font);
-        titleText.setForeground(Color.WHITE); 
-        titleText.setBorder(BorderFactory.createEmptyBorder(5, 5, 200, 5));
+        square = new Square[8][8];        
+        for(int y = 0; y < 8; y++) {
+            for(int x = 0; x < 8; x++) {
+                if((x+y)%2 == 0) square[x][y] = new Square(false, x, y);
+                else square[x][y] = new Square(true, x, y);
+                contentPanel.add(square[x][y]);
+            }
+        }
         
-        contentPanel.add(titleText, BorderLayout.PAGE_START);
+        add(contentPanel, BorderLayout.CENTER);
     }
 }
