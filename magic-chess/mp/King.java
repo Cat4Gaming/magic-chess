@@ -14,8 +14,9 @@ public class King extends ChessPiece {
         else setIcon(tmp.resizedImageIcon("assets/gfx/pieces/white/King.png", tmp.getScreenHeight()/10, tmp.getScreenHeight()/10));
     }
     
-    @Override 
-    public void showMoves() {
+    @Override public boolean isKing() {return true;}
+    
+    @Override public void showMoves() {
         ChessPiece tmp = null;
         if(yPos != 0) {
             tmp = owner.getChessPieceOfSquare(xPos, yPos-1);

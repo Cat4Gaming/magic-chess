@@ -11,10 +11,13 @@ public class Game extends JPanel {
     private Font font;
     private Square[][] square;
     private ChessPiece selectedChessPiece;
+    private boolean blackTurn, isGameOver;
+    private JLabel wonText;
     
     public Game(MainFrame owner) {
         super();
         this.owner = owner;
+        blackTurn = isGameOver = false;
         createGUI();
     }
     
@@ -22,9 +25,62 @@ public class Game extends JPanel {
         setBounds(0, 0, owner.getScreenWidth(), owner.getScreenHeight());
         setLayout(new BorderLayout());
         
-        JPanel contentPanel = new JPanel();
-        contentPanel.setLayout(new GridLayout(8,8));
-        contentPanel.setBorder(BorderFactory.createEmptyBorder(owner.getScreenHeight()/10, (owner.getScreenWidth()-owner.getScreenHeight())/2+(owner.getScreenHeight()/10), owner.getScreenHeight()/10, (owner.getScreenWidth()-owner.getScreenHeight())/2+(owner.getScreenHeight()/10)));
+        JLabel contentPanel = new JLabel();
+        contentPanel.setLayout(new BorderLayout());
+        //contentPanel.setIcon(owner.resizedImageIcon("assets/gfx/background.png", owner.getScreenWidth(), owner.getScreenHeight()));
+        
+        try {
+            font = Font.createFont(Font.TRUETYPE_FONT, new File("assets/fonts/Yusei_Magic/YuseiMagic-Regular.ttf")).deriveFont(48f);
+        } catch(IOException| FontFormatException e) {}
+        
+        JPanel leftContentPanel = new JPanel();
+        leftContentPanel.setLayout(new BoxLayout(leftContentPanel, BoxLayout.Y_AXIS));
+        leftContentPanel.setPreferredSize(new Dimension((owner.getScreenWidth()-owner.getScreenHeight())/2+(owner.getScreenHeight()/10), owner.getScreenHeight()));
+        leftContentPanel.setOpaque(false);
+        
+        JPanel rightContentPanel = new JPanel();
+        rightContentPanel.setLayout(new BoxLayout(rightContentPanel, BoxLayout.Y_AXIS));
+        rightContentPanel.setPreferredSize(new Dimension((owner.getScreenWidth()-owner.getScreenHeight())/2+(owner.getScreenHeight()/10), owner.getScreenHeight()));
+        rightContentPanel.setOpaque(false);
+        
+        JPanel topContentPanel = new JPanel();
+        topContentPanel.setLayout(new BoxLayout(topContentPanel, BoxLayout.X_AXIS));
+        topContentPanel.setPreferredSize(new Dimension(owner.getScreenWidth(), owner.getScreenHeight()/10));
+        topContentPanel.setOpaque(false);
+        
+        JPanel bottomContentPanel = new JPanel();
+        bottomContentPanel.setLayout(new BoxLayout(bottomContentPanel, BoxLayout.X_AXIS));
+        bottomContentPanel.setPreferredSize(new Dimension(owner.getScreenWidth(), owner.getScreenHeight()/10));
+        bottomContentPanel.setOpaque(false);
+        
+        JButton restartButton = new JButton("Restart Game");
+        restartButton.setFocusable(false);
+        restartButton.setBorder(BorderFactory.createEmptyBorder());
+        restartButton.setFont(font);
+        restartButton.setForeground(Color.BLACK); 
+        restartButton.setContentAreaFilled(false);
+        restartButton.addActionListener(event -> {
+            SwingUtilities.invokeLater(() -> owner.showView(new Game(owner)));
+        });
+        
+        JButton menuButton = new JButton("Back to Menu");
+        menuButton.setFocusable(false);
+        menuButton.setBorder(BorderFactory.createEmptyBorder());
+        menuButton.setFont(font);
+        menuButton.setForeground(Color.BLACK); 
+        menuButton.setContentAreaFilled(false);
+        menuButton.addActionListener(event -> {
+            SwingUtilities.invokeLater(() -> owner.showView(new main.Menu(owner)));
+        });
+        
+        wonText = new JLabel();
+        wonText.setFont(font);
+        wonText.setForeground(Color.BLACK);
+        
+        JPanel boardPanel = new JPanel();
+        boardPanel.setLayout(new GridLayout(8,8));
+        boardPanel.setBorder(BorderFactory.createCompoundBorder(null, BorderFactory.createLineBorder(Color.BLACK,5)));
+        boardPanel.setBackground(Color.BLACK);
         
         square = new Square[8][8];        
         for(int y = 0; y < 8; y++) {
@@ -60,26 +116,45 @@ public class Game extends JPanel {
                
         for(int y = 0; y < 8; y++) {
             for(int x = 0; x < 8; x++) {
-                contentPanel.add(square[x][y]);
+                boardPanel.add(square[x][y]);
             }
         }
+
+        leftContentPanel.add(restartButton);
+        leftContentPanel.add(menuButton);  
+        rightContentPanel.add(wonText);
         
-        add(contentPanel, BorderLayout.CENTER);
+        contentPanel.add(boardPanel, BorderLayout.CENTER);
+        contentPanel.add(rightContentPanel, BorderLayout.EAST);
+        contentPanel.add(leftContentPanel, BorderLayout.WEST);
+        contentPanel.add(topContentPanel, BorderLayout.NORTH);
+        contentPanel.add(bottomContentPanel, BorderLayout.SOUTH);
+        add(contentPanel);
     }
     
     public void selectSquare(int x, int y, boolean selectable) {
         if(selectable) {
+            ChessPiece tmp = square[x][y].getChessPiece();
+            if(tmp != null && tmp.isKing()) {
+                isGameOver = true;
+                if(blackTurn) wonText.setText("Black won");
+                else wonText.setText("White won");
+            }
+            blackTurn = !blackTurn;
+            
             square[selectedChessPiece.getXPos()][selectedChessPiece.getYPos()].setChessPiece(null);
             square[x][y].setChessPiece(selectedChessPiece);
             selectedChessPiece = null;
+            
             setAllUnselected();
             updateUI();
             return;
         }
         setAllUnselected();
-        if(square[x][y].getChessPiece() != null) {
+        if(square[x][y].getChessPiece() != null && !isGameOver) {
             selectedChessPiece = square[x][y].getChessPiece();
-            selectedChessPiece.showMoves();
+            if(blackTurn && selectedChessPiece.isBlack()) selectedChessPiece.showMoves();
+            else if(!blackTurn && selectedChessPiece.isBlack() == false) selectedChessPiece.showMoves();
         }
         updateUI();
     }

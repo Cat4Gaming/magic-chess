@@ -11,6 +11,7 @@ public abstract class ChessPiece extends JLabel {
     public int getXPos() {return xPos;}
     public int getYPos() {return yPos;}
     public boolean isBlack() {return isBlack;}
+    public boolean isKing() {return false;}
     
     public void moveTo(int x, int y) {
         xPos = x;
