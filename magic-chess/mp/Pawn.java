@@ -1,35 +1,60 @@
 package mp;
 
+import javax.swing.*;
+import main.MainFrame;
 
-/**
- * Write a description of class Pawn here.
- *
- * @author (your name)
- * @version (a version number or a date)
- */
-public class Pawn
-{
-    // instance variables - replace the example below with your own
-    private int x;
-
-    /**
-     * Constructor for objects of class Pawn
-     */
-    public Pawn()
-    {
-        // initialise instance variables
-        x = 0;
+public class Pawn extends ChessPiece {
+    int moved;
+    
+    public Pawn(Game gOwner, boolean black) {
+        owner = gOwner;
+        isBlack = black;
+        MainFrame tmp = owner.getOwner();
+        if(black) setIcon(tmp.resizedImageIcon("assets/gfx/pieces/black/Pawn.png", tmp.getScreenHeight()/10, tmp.getScreenHeight()/10));
+        else setIcon(tmp.resizedImageIcon("assets/gfx/pieces/white/Pawn.png", tmp.getScreenHeight()/10, tmp.getScreenHeight()/10));
     }
-
-    /**
-     * An example of a method - replace this comment with your own
-     *
-     * @param  y  a sample parameter for a method
-     * @return    the sum of x and y
-     */
-    public int sampleMethod(int y)
-    {
-        // put your code here
-        return x + y;
+    
+    @Override public void moveTo(int x, int y) {
+        xPos = x;
+        yPos = y;
+        moved++;
+    }
+    
+    @Override public void showMoves() {
+        ChessPiece tmp = null;
+        if(!isBlack) {
+            tmp = owner.getChessPieceOfSquare(xPos, yPos-1);
+            if(tmp == null) owner.setSquareSelectable(xPos, yPos-1, true);
+            if(moved < 2 && tmp == null) {
+                tmp = owner.getChessPieceOfSquare(xPos, yPos-2);
+                if(tmp == null) owner.setSquareSelectable(xPos, yPos-2, true);
+            }
+            if(xPos != 0) {
+                tmp = owner.getChessPieceOfSquare(xPos-1, yPos-1);
+                if(tmp != null && tmp.isBlack() != isBlack()) owner.setSquareSelectable(xPos-1, yPos-1, true);
+            }
+            if(xPos != 7) {
+                tmp = owner.getChessPieceOfSquare(xPos+1, yPos-1);
+                if(tmp != null && tmp.isBlack() != isBlack()) owner.setSquareSelectable(xPos+1, yPos-1, true);
+            }
+            if(yPos == 0) owner.pawnUpgrade(xPos, yPos, isBlack);
+        }
+        else {
+            tmp = owner.getChessPieceOfSquare(xPos, yPos+1);
+            if(tmp == null) owner.setSquareSelectable(xPos, yPos+1, true);
+            if(moved < 2 && tmp == null) {
+                tmp = owner.getChessPieceOfSquare(xPos, yPos+2);
+                if(tmp == null) owner.setSquareSelectable(xPos, yPos+2, true);
+            }
+            if(xPos != 0) {
+                tmp = owner.getChessPieceOfSquare(xPos-1, yPos+1);
+                if(tmp != null && tmp.isBlack() != isBlack()) owner.setSquareSelectable(xPos-1, yPos+1, true);
+            }
+            if(xPos != 7) {
+                tmp = owner.getChessPieceOfSquare(xPos+1, yPos+1);
+                if(tmp != null && tmp.isBlack() != isBlack()) owner.setSquareSelectable(xPos+1, yPos+1, true);
+            }
+            if(yPos == 7) owner.pawnUpgrade(xPos, yPos, isBlack);
+        }
     }
 }
