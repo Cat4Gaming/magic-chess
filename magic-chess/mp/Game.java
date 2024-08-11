@@ -27,7 +27,7 @@ public class Game extends JPanel {
         
         JLabel contentPanel = new JLabel();
         contentPanel.setLayout(new BorderLayout());
-        //contentPanel.setIcon(owner.resizedImageIcon("assets/gfx/background.png", owner.getScreenWidth(), owner.getScreenHeight()));
+        contentPanel.setIcon(owner.resizedImageIcon("assets/gfx/background.png", owner.getScreenWidth(), owner.getScreenHeight()));
         
         try {
             font = Font.createFont(Font.TRUETYPE_FONT, new File("assets/fonts/Yusei_Magic/YuseiMagic-Regular.ttf")).deriveFont(48f);
@@ -53,7 +53,7 @@ public class Game extends JPanel {
         bottomContentPanel.setPreferredSize(new Dimension(owner.getScreenWidth(), owner.getScreenHeight()/10));
         bottomContentPanel.setOpaque(false);
         
-        JButton restartButton = new JButton("Restart Game");
+        JButton restartButton = new JButton(owner.getTextByTag("restartGame"));
         restartButton.setFocusable(false);
         restartButton.setBorder(BorderFactory.createEmptyBorder());
         restartButton.setFont(font);
@@ -63,7 +63,7 @@ public class Game extends JPanel {
             SwingUtilities.invokeLater(() -> owner.showView(new Game(owner)));
         });
         
-        JButton menuButton = new JButton("Back to Menu");
+        JButton menuButton = new JButton(owner.getTextByTag("backToMenu"));
         menuButton.setFocusable(false);
         menuButton.setBorder(BorderFactory.createEmptyBorder());
         menuButton.setFont(font);
@@ -137,8 +137,8 @@ public class Game extends JPanel {
             ChessPiece tmp = square[x][y].getChessPiece();
             if(tmp != null && tmp.isKing()) {
                 isGameOver = true;
-                if(blackTurn) wonText.setText("Black won");
-                else wonText.setText("White won");
+                if(blackTurn) wonText.setText(owner.getTextByTag("blackWon"));
+                else wonText.setText(owner.getTextByTag("whiteWon"));
             }
             blackTurn = !blackTurn;
             

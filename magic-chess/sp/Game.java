@@ -29,7 +29,7 @@ public class Game extends JPanel {
             font = Font.createFont(Font.TRUETYPE_FONT, new File("assets/fonts/Yusei_Magic/YuseiMagic-Regular.ttf")).deriveFont(128f);
         } catch(IOException| FontFormatException e) {}
                 
-        JLabel titleText = new JLabel(" Singleplayer", SwingConstants.LEFT);
+        JLabel titleText = new JLabel(" " + owner.getTextByTag("singleplayer"), SwingConstants.LEFT);
         titleText.setFont(font);
         titleText.setForeground(Color.WHITE); 
         titleText.setBorder(BorderFactory.createEmptyBorder(5, 5, 200, 5));

@@ -31,7 +31,7 @@ public class Menu extends JPanel {
             font = Font.createFont(Font.TRUETYPE_FONT, new File("assets/fonts/Yusei_Magic/YuseiMagic-Regular.ttf")).deriveFont(128f);
         } catch(IOException| FontFormatException e) {}
         
-        JLabel titleText = new JLabel(" Magic-Chess", SwingConstants.LEFT);
+        JLabel titleText = new JLabel(" " + owner.getTextByTag("title"), SwingConstants.LEFT);
         titleText.setFont(font);
         titleText.setForeground(Color.WHITE); 
         titleText.setBorder(BorderFactory.createEmptyBorder(5, 5, 200, 5));
@@ -40,7 +40,7 @@ public class Menu extends JPanel {
             font = Font.createFont(Font.TRUETYPE_FONT, new File("assets/fonts/Yusei_Magic/YuseiMagic-Regular.ttf")).deriveFont(48f);
         } catch(IOException| FontFormatException e) {}
 
-        JButton spButton = new JButton("     Singleplayer");
+        JButton spButton = new JButton("     " + owner.getTextByTag("singleplayer"));
         spButton.setFocusable(false);
         spButton.setBorder(BorderFactory.createEmptyBorder());
         spButton.setFont(font);
@@ -50,7 +50,7 @@ public class Menu extends JPanel {
             SwingUtilities.invokeLater(() -> owner.showView(new sp.Game(owner)));
         });
         
-        JButton mpButton = new JButton("     Multiplayer");
+        JButton mpButton = new JButton("     " + owner.getTextByTag("multiplayer"));
         mpButton.setFocusable(false);
         mpButton.setBorder(BorderFactory.createEmptyBorder());
         mpButton.setFont(font);
@@ -60,7 +60,7 @@ public class Menu extends JPanel {
             SwingUtilities.invokeLater(() -> owner.showView(new mp.Game(owner)));
         });
         
-        JButton settingsButton = new JButton("     Settings");
+        JButton settingsButton = new JButton("     " + owner.getTextByTag("settings"));
         settingsButton.setFocusable(false);
         settingsButton.setBorder(BorderFactory.createEmptyBorder());
         settingsButton.setFont(font);
@@ -70,7 +70,7 @@ public class Menu extends JPanel {
             SwingUtilities.invokeLater(() -> owner.showView(new Settings(owner)));
         });
 
-        JButton closeButton = new JButton("     Quit");
+        JButton closeButton = new JButton("     " + owner.getTextByTag("quit"));
         closeButton.setFocusable(false);
         closeButton.setBorder(BorderFactory.createEmptyBorder());
         closeButton.setFont(font);
@@ -86,7 +86,7 @@ public class Menu extends JPanel {
                 font = Font.createFont(Font.TRUETYPE_FONT, new File("assets/fonts/Yusei_Magic/YuseiMagic-Regular.ttf")).deriveFont(16f);
             } catch(IOException| FontFormatException e) {}
             
-            JLabel warningText = new JLabel("Warning!: Using a resolution with a aspect ratio other than 16:10 or 16:9 may result in unintended behaviour. For the best user experience you should change your display resolution in your system settings.",  SwingConstants.CENTER);
+            JLabel warningText = new JLabel(owner.getTextByTag("screenSizeWarning"),  SwingConstants.CENTER);
             warningText.setForeground(Color.ORANGE);
             warningText.setBackground(Color.BLACK);
             warningText.setOpaque(true);

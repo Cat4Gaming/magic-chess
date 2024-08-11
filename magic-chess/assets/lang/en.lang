@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<dico langid='en' rtl='no'>
+
+	<lang>English</lang>
+	<langcode>en</langcode>
+
+	<title>Magic-Chess</title>
+	<singleplayer>Singleplayer</singleplayer>
+	<multiplayer>Multiplayer</multiplayer>
+	<settings>Settings</settings>
+	<quit>Quit</quit>
+	<screenSizeWarning>Warning!: Using a display resolution with a aspect ratio other than 16:10 or 16:9 may result in unintended behaviour. For the best user experience you should change your display resolution in your system settings.</screenSizeWarning>
+	<apply>Apply</apply>
+	<back>Back</back>
+	<restartGame>Restart Game</restartGame>
+	<backToMenu>Back to Menu</backToMenu>
+	<blackWon>Black won</blackWon>
+	<whiteWon>White won</whiteWon>
+	<language>Language</language>
+</dico>
