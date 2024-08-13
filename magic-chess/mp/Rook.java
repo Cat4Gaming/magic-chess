@@ -13,6 +13,8 @@ public class Rook extends ChessPiece {
         else setIcon(tmp.resizedImageIcon("assets/gfx/pieces/white/Rook.png", tmp.getScreenHeight()/10, tmp.getScreenHeight()/10));
     }
     
+    @Override public boolean isRook() {return true;}
+    
     @Override public void showMoves() {
         int min = 0;
         int max = 7;

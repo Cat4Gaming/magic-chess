@@ -11,13 +11,15 @@ public class Game extends JPanel {
     private Font font;
     private Square[][] square;
     private ChessPiece selectedChessPiece;
-    private boolean blackTurn, isGameOver;
+    private Pawn pawnForUpgrade;
+    private boolean blackTurn, gameFieldStop;
     private JLabel wonText;
+    private JPanel changeWhitePawnPanel, changeBlackPawnPanel;
     
     public Game(MainFrame owner) {
         super();
         this.owner = owner;
-        blackTurn = isGameOver = false;
+        blackTurn = gameFieldStop = false;
         createGUI();
     }
     
@@ -33,15 +35,27 @@ public class Game extends JPanel {
             font = Font.createFont(Font.TRUETYPE_FONT, new File("assets/fonts/Yusei_Magic/YuseiMagic-Regular.ttf")).deriveFont(48f);
         } catch(IOException| FontFormatException e) {}
         
-        JPanel leftContentPanel = new JPanel();
-        leftContentPanel.setLayout(new BoxLayout(leftContentPanel, BoxLayout.Y_AXIS));
-        leftContentPanel.setPreferredSize(new Dimension((owner.getScreenWidth()-owner.getScreenHeight())/2+(owner.getScreenHeight()/10), owner.getScreenHeight()));
-        leftContentPanel.setOpaque(false);
-        
         JPanel rightContentPanel = new JPanel();
-        rightContentPanel.setLayout(new BoxLayout(rightContentPanel, BoxLayout.Y_AXIS));
+        rightContentPanel.setLayout(new BorderLayout());
         rightContentPanel.setPreferredSize(new Dimension((owner.getScreenWidth()-owner.getScreenHeight())/2+(owner.getScreenHeight()/10), owner.getScreenHeight()));
         rightContentPanel.setOpaque(false);
+        
+        changeWhitePawnPanel = new JPanel();
+        changeWhitePawnPanel.setLayout(new GridLayout(1,4));
+        changeWhitePawnPanel.setPreferredSize(new Dimension((owner.getScreenWidth()-owner.getScreenHeight())/2+(owner.getScreenHeight()/10), ((owner.getScreenWidth()-owner.getScreenHeight())/2+(owner.getScreenHeight()/10))/4));
+        changeWhitePawnPanel.setOpaque(true);
+        changeWhitePawnPanel.setVisible(false);
+        
+        changeBlackPawnPanel = new JPanel();
+        changeBlackPawnPanel.setLayout(new GridLayout(1,4));
+        changeBlackPawnPanel.setPreferredSize(new Dimension((owner.getScreenWidth()-owner.getScreenHeight())/2+(owner.getScreenHeight()/10), ((owner.getScreenWidth()-owner.getScreenHeight())/2+(owner.getScreenHeight()/10))/4));
+        changeBlackPawnPanel.setOpaque(false);
+        changeBlackPawnPanel.setVisible(false);
+        
+        for(int i = 0; i < 4; i++) {
+            changeWhitePawnPanel.add(new PawnUpgradeButton(i, this));
+            changeBlackPawnPanel.add(new PawnUpgradeButton(i+10, this));
+        }
         
         JPanel topContentPanel = new JPanel();
         topContentPanel.setLayout(new BoxLayout(topContentPanel, BoxLayout.X_AXIS));
@@ -52,6 +66,11 @@ public class Game extends JPanel {
         bottomContentPanel.setLayout(new BoxLayout(bottomContentPanel, BoxLayout.X_AXIS));
         bottomContentPanel.setPreferredSize(new Dimension(owner.getScreenWidth(), owner.getScreenHeight()/10));
         bottomContentPanel.setOpaque(false);
+        
+        JPanel leftContentPanel = new JPanel();
+        leftContentPanel.setLayout(new BoxLayout(leftContentPanel, BoxLayout.Y_AXIS));
+        leftContentPanel.setPreferredSize(new Dimension((owner.getScreenWidth()-owner.getScreenHeight())/2+(owner.getScreenHeight()/10), owner.getScreenHeight()));
+        leftContentPanel.setOpaque(false);
         
         JButton restartButton = new JButton(owner.getTextByTag("restartGame"));
         restartButton.setFocusable(false);
@@ -107,10 +126,10 @@ public class Game extends JPanel {
         square[5][0].setChessPiece(new Bishop(this, true));
         square[2][7].setChessPiece(new Bishop(this, false));
         square[5][7].setChessPiece(new Bishop(this, false));
-        square[4][7].setChessPiece(new Queen(this, false));
-        square[3][7].setChessPiece(new King(this, false));
-        square[3][0].setChessPiece(new King(this, true));
-        square[4][0].setChessPiece(new Queen(this, true));
+        square[3][7].setChessPiece(new Queen(this, false));
+        square[4][7].setChessPiece(new King(this, false));
+        square[4][0].setChessPiece(new King(this, true));
+        square[3][0].setChessPiece(new Queen(this, true));
         
         setAllUnselected();
                
@@ -122,7 +141,10 @@ public class Game extends JPanel {
 
         leftContentPanel.add(restartButton);
         leftContentPanel.add(menuButton);  
-        rightContentPanel.add(wonText);
+        
+        rightContentPanel.add(changeBlackPawnPanel, BorderLayout.NORTH);
+        rightContentPanel.add(wonText, BorderLayout.CENTER);
+        rightContentPanel.add(changeWhitePawnPanel, BorderLayout.SOUTH);
         
         contentPanel.add(boardPanel, BorderLayout.CENTER);
         contentPanel.add(rightContentPanel, BorderLayout.EAST);
@@ -136,7 +158,7 @@ public class Game extends JPanel {
         if(selectable) {
             ChessPiece tmp = square[x][y].getChessPiece();
             if(tmp != null && tmp.isKing()) {
-                isGameOver = true;
+                gameFieldStop = true;
                 if(blackTurn) wonText.setText(owner.getTextByTag("blackWon"));
                 else wonText.setText(owner.getTextByTag("whiteWon"));
             }
@@ -151,10 +173,19 @@ public class Game extends JPanel {
             return;
         }
         setAllUnselected();
-        if(square[x][y].getChessPiece() != null && !isGameOver) {
+        if(square[x][y].getChessPiece() != null && !gameFieldStop) {
             selectedChessPiece = square[x][y].getChessPiece();
-            if(blackTurn && selectedChessPiece.isBlack()) selectedChessPiece.showMoves();
-            else if(!blackTurn && selectedChessPiece.isBlack() == false) selectedChessPiece.showMoves();
+            if(blackTurn && selectedChessPiece.isBlack()) { 
+                selectedChessPiece.showMoves();
+            }
+            else if(!blackTurn && selectedChessPiece.isBlack() == false) { 
+                selectedChessPiece.showMoves();
+            }
+            for(int yB = 0; yB < 8; yB++) {
+                for(int xB = 0; xB < 8; xB++) {
+                    if(square[xB][yB].getChessPiece() != null && blackTurn == square[xB][yB].getChessPiece().isBlack()) square[xB][yB].getChessPiece().resetEnPassant();
+                }
+            }
         }
         updateUI();
     }
@@ -173,7 +204,82 @@ public class Game extends JPanel {
     
     public MainFrame getOwner() {return owner;}
     
-    public void pawnUpgrade(int x, int y, boolean isBlack) {
-        //TODO
+    public void pawnPromotion(Pawn cp) {
+        gameFieldStop = true;
+        if(cp.isBlack()) changeBlackPawnPanel.setVisible(true);
+        else changeWhitePawnPanel.setVisible(true);
+        pawnForUpgrade = cp;
+    }
+    
+    public void pawnPromotionResponse(int type) {
+        square[pawnForUpgrade.getXPos()][pawnForUpgrade.getYPos()].setChessPiece(null);
+        ChessPiece tmp = null;
+        switch(type) {
+            case 0:     tmp = new Rook(this, false);
+                break;
+            case 1:     tmp = new Knight(this, false);
+                break;
+            case 2:     tmp = new Bishop(this, false);
+                break;
+            case 3:     tmp = new Queen(this, false);
+                break;
+            case 10:    tmp = new Rook(this, true);
+                break;
+            case 11:    tmp = new Knight(this, true);
+                break;
+            case 12:    tmp = new Bishop(this, true);
+                break;
+            case 13:    tmp = new Queen(this, true);
+                break;
+        }
+        square[pawnForUpgrade.getXPos()][pawnForUpgrade.getYPos()].setSelectable(true);
+        square[pawnForUpgrade.getXPos()][pawnForUpgrade.getYPos()].setChessPiece(tmp);
+        square[pawnForUpgrade.getXPos()][pawnForUpgrade.getYPos()].setSelectable(false);
+        changeBlackPawnPanel.setVisible(false);
+        changeWhitePawnPanel.setVisible(false);
+        gameFieldStop = false;
+        selectedChessPiece = null;
+        updateUI();
+    }
+    
+    public void castling(int x, boolean isBlack) {
+        if(!isBlack) {
+            if(x == 6) {
+                selectedChessPiece = square[7][7].getChessPiece();
+                square[7][7].setChessPiece(null);
+                square[5][7].setSelectable(true);
+                square[5][7].setChessPiece(selectedChessPiece);
+            }
+            if(x == 2) {
+                selectedChessPiece = square[0][7].getChessPiece();
+                square[0][7].setChessPiece(null);
+                square[3][7].setSelectable(true);
+                square[3][7].setChessPiece(selectedChessPiece);
+            }
+        }
+        else {
+            if(x == 6) {
+                selectedChessPiece = square[7][0].getChessPiece();
+                square[7][0].setChessPiece(null);
+                square[5][0].setSelectable(true);
+                square[5][0].setChessPiece(selectedChessPiece);
+            }
+            if(x == 2) {
+                selectedChessPiece = square[0][0].getChessPiece();
+                square[0][0].setChessPiece(null);
+                square[3][0].setSelectable(true);
+                square[3][0].setChessPiece(selectedChessPiece);
+            }
+        }
+        selectedChessPiece = null;
+        setAllUnselected();
+        updateUI();
+    }
+    
+    public void killChessPiece(int x, int y) {
+        System.out.println(x + " : " + y);
+        square[x][y].setSelectable(true);
+        square[x][y].setChessPiece(null);
+        square[x][y].setSelectable(false);
     }
 }
