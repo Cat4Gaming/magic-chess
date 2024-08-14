@@ -6,6 +6,7 @@ import main.MainFrame;
 public class Pawn extends ChessPiece {
     
     public Pawn(Game gOwner, boolean black) {
+        pieceNumber = 0;
         owner = gOwner;
         isBlack = black;
         MainFrame tmp = owner.getOwner();
@@ -14,8 +15,9 @@ public class Pawn extends ChessPiece {
     }
     
     @Override public void moveTo(int x, int y) {
-        if(y+1 == yPos && x != xPos && owner.getChessPieceOfSquare(x, yPos) != null) owner.killChessPiece(x, yPos);
-        if(y-1 == yPos && x != xPos && owner.getChessPieceOfSquare(x, yPos) != null) owner.killChessPiece(x, yPos);
+        owner.capture(true);
+        if(owner.getChessPieceOfSquare(x, yPos) != null && owner.getChessPieceOfSquare(x, yPos).isBlack() != isBlack() && y+1 == yPos && x != xPos) owner.killChessPiece(x, yPos);
+        if(owner.getChessPieceOfSquare(x, yPos) != null && owner.getChessPieceOfSquare(x, yPos).isBlack() != isBlack() && y-1 == yPos && x != xPos) owner.killChessPiece(x, yPos);
         xPos = x;
         yPos = y;
         if(moved < 2) {

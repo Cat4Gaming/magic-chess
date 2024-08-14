@@ -6,6 +6,7 @@ import main.MainFrame;
 public class Queen extends ChessPiece {
     
     public Queen(Game gOwner, boolean black) {
+        pieceNumber = 4;
         owner = gOwner;
         isBlack = black;
         MainFrame tmp = owner.getOwner();

@@ -31,7 +31,11 @@ public class Square extends JButton {
     }
     
     public void setChessPiece(ChessPiece chessPiec) {
-        if(chessPiece != null) remove(chessPiece);
+        if(chessPiece == null && chessPiec != null) owner.capture(false);
+        else if(chessPiece != null && chessPiec != null) owner.capture(true);
+        if(chessPiece != null) {
+            remove(chessPiece);
+        }
         chessPiece = chessPiec;
         if(chessPiec != null && isSelectable) {
             chessPiece.moveTo(xPos, yPos);

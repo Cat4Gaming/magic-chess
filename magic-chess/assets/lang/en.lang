@@ -18,4 +18,6 @@
 	<blackWon>Black won</blackWon>
 	<whiteWon>White won</whiteWon>
 	<language>Language</language>
+	<drawAgree>Agree to Draw</drawAgree>
+	<drawGame>Draw</drawGame>
 </dico>

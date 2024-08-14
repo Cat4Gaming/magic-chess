@@ -6,6 +6,7 @@ import main.MainFrame;
 public class Rook extends ChessPiece {
     
     public Rook(Game gOwner, boolean black) {
+        pieceNumber = 1;
         owner = gOwner;
         isBlack = black;
         MainFrame tmp = owner.getOwner();

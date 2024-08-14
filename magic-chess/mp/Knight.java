@@ -6,11 +6,15 @@ import main.MainFrame;
 public class Knight extends ChessPiece {
     
     public Knight(Game gOwner, boolean black) {
+        pieceNumber = 3;
         owner = gOwner;
-        isBlack = black;MainFrame tmp = owner.getOwner();
+        isBlack = black;
+        MainFrame tmp = owner.getOwner();
         if(black) setIcon(tmp.resizedImageIcon("assets/gfx/pieces/black/Knight.png", tmp.getScreenHeight()/10, tmp.getScreenHeight()/10));
         else setIcon(tmp.resizedImageIcon("assets/gfx/pieces/white/Knight.png", tmp.getScreenHeight()/10, tmp.getScreenHeight()/10));
     }
+    
+    @Override public boolean isKnightOrBishop() {return true;}
     
     @Override public void showMoves() {
         ChessPiece tmp = null;

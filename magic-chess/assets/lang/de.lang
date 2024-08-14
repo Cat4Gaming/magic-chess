@@ -18,4 +18,6 @@
 	<blackWon>Schwarz hat gewonnen</blackWon>
 	<whiteWon>Weiß hat gewonnen</whiteWon>
 	<language>Sprache</language>
+	<drawAgree>Unentschieden zustimmen</drawAgree>
+	<drawGame>Unentschieden</drawGame>
 </dico>

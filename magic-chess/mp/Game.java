@@ -15,11 +15,15 @@ public class Game extends JPanel {
     private boolean blackTurn, gameFieldStop;
     private JLabel wonText;
     private JPanel changeWhitePawnPanel, changeBlackPawnPanel;
+    private JButton restartButton, drawButton;
+    private int passedMoves;
+    private GameplayData gameplayData;
     
     public Game(MainFrame owner) {
         super();
         this.owner = owner;
         blackTurn = gameFieldStop = false;
+        gameplayData = new GameplayData();
         createGUI();
     }
     
@@ -72,14 +76,29 @@ public class Game extends JPanel {
         leftContentPanel.setPreferredSize(new Dimension((owner.getScreenWidth()-owner.getScreenHeight())/2+(owner.getScreenHeight()/10), owner.getScreenHeight()));
         leftContentPanel.setOpaque(false);
         
-        JButton restartButton = new JButton(owner.getTextByTag("restartGame"));
+        restartButton = new JButton(owner.getTextByTag("restartGame"));
         restartButton.setFocusable(false);
         restartButton.setBorder(BorderFactory.createEmptyBorder());
         restartButton.setFont(font);
         restartButton.setForeground(Color.BLACK); 
         restartButton.setContentAreaFilled(false);
+        restartButton.setVisible(false);
         restartButton.addActionListener(event -> {
             SwingUtilities.invokeLater(() -> owner.showView(new Game(owner)));
+        });
+
+        drawButton = new JButton(owner.getTextByTag("drawAgree"));
+        drawButton.setFocusable(false);
+        drawButton.setBorder(BorderFactory.createEmptyBorder());
+        drawButton.setFont(font);
+        drawButton.setForeground(Color.BLACK); 
+        drawButton.setContentAreaFilled(false);
+        drawButton.addActionListener(event -> {
+            gameFieldStop = true;
+            wonText.setText(owner.getTextByTag("drawGame"));
+            saveGame("draw-agree");
+            drawButton.setVisible(false);
+            restartButton.setVisible(true);
         });
         
         JButton menuButton = new JButton(owner.getTextByTag("backToMenu"));
@@ -140,6 +159,7 @@ public class Game extends JPanel {
         }
 
         leftContentPanel.add(restartButton);
+        leftContentPanel.add(drawButton);
         leftContentPanel.add(menuButton);  
         
         rightContentPanel.add(changeBlackPawnPanel, BorderLayout.NORTH);
@@ -155,12 +175,40 @@ public class Game extends JPanel {
     }
     
     public void selectSquare(int x, int y, boolean selectable) {
+        int blackPoints = 0;
+        int whitePoints = 0;
+        for(int yB = 0; yB < 8; yB++) {
+            for(int xB = 0; xB < 8; xB++) {
+                if(square[xB][yB].getChessPiece() != null && square[xB][yB].getChessPiece().isBlack() && square[xB][yB].getChessPiece().isKing() == false && square[xB][yB].getChessPiece().isKnightOrBishop() == false) blackPoints = -10000;
+                if(square[xB][yB].getChessPiece() != null && square[xB][yB].getChessPiece().isBlack() == false && square[xB][yB].getChessPiece().isKing() == false && square[xB][yB].getChessPiece().isKnightOrBishop() == false) whitePoints = -10000;
+                if(square[xB][yB].getChessPiece() != null && square[xB][yB].getChessPiece().isBlack() && square[xB][yB].getChessPiece().isKing()) blackPoints += 5;
+                if(square[xB][yB].getChessPiece() != null && square[xB][yB].getChessPiece().isBlack() == false && square[xB][yB].getChessPiece().isKing()) whitePoints += 5;
+                if(square[xB][yB].getChessPiece() != null && square[xB][yB].getChessPiece().isBlack() && square[xB][yB].getChessPiece().isKnightOrBishop()) blackPoints += 3;
+                if(square[xB][yB].getChessPiece() != null && square[xB][yB].getChessPiece().isBlack() == false && square[xB][yB].getChessPiece().isKnightOrBishop()) whitePoints += 3;
+            }
+        }
+        if(blackPoints > 4 && whitePoints > 4) {
+            gameFieldStop = true;
+            wonText.setText(owner.getTextByTag("drawGame"));
+            saveGame("draw-insufmat");
+            drawButton.setVisible(false);
+            restartButton.setVisible(true);
+        }
+            
         if(selectable) {
             ChessPiece tmp = square[x][y].getChessPiece();
             if(tmp != null && tmp.isKing()) {
                 gameFieldStop = true;
-                if(blackTurn) wonText.setText(owner.getTextByTag("blackWon"));
-                else wonText.setText(owner.getTextByTag("whiteWon"));
+                restartButton.setVisible(true);
+                drawButton.setVisible(false);
+                if(blackTurn) { 
+                    wonText.setText(owner.getTextByTag("blackWon"));
+                    saveGame("win-black");
+                }
+                else { 
+                    wonText.setText(owner.getTextByTag("whiteWon"));
+                    saveGame("win-white");
+                }
             }
             blackTurn = !blackTurn;
             
@@ -170,6 +218,14 @@ public class Game extends JPanel {
             
             setAllUnselected();
             updateUI();
+            
+            if(gameplayData.addMoveDataAndCheckThreefold(square)) {
+                gameFieldStop = true;
+                wonText.setText(owner.getTextByTag("drawGame"));
+                saveGame("draw-threefold");
+                drawButton.setVisible(false);
+                restartButton.setVisible(true);
+            }
             return;
         }
         setAllUnselected();
@@ -277,9 +333,30 @@ public class Game extends JPanel {
     }
     
     public void killChessPiece(int x, int y) {
-        System.out.println(x + " : " + y);
         square[x][y].setSelectable(true);
         square[x][y].setChessPiece(null);
         square[x][y].setSelectable(false);
+    }
+    
+    public void capture(boolean captured) {
+        if(captured) passedMoves = 0;
+        else passedMoves++;
+        if(passedMoves >= 100) {
+            gameFieldStop = true;
+            wonText.setText(owner.getTextByTag("drawGame"));
+            saveGame("draw-50moves");
+            drawButton.setVisible(false);
+            restartButton.setVisible(true);
+        }
+    }
+    
+    public void saveGame(String reason) {
+        try {
+            FileOutputStream fos = new FileOutputStream("data/games/localmp/" + gameplayData.createFileName() + "-" + reason + ".magic-chess-board");
+            BufferedOutputStream bos = new BufferedOutputStream(fos);
+            ObjectOutputStream oos = new ObjectOutputStream(bos);
+            oos.writeObject(gameplayData);
+            oos.close();
+        } catch(IOException e) {e.printStackTrace();}
     }
 }
