@@ -5,13 +5,14 @@ import java.util.*;
 import java.time.*;
 
 public class GameplayData implements Serializable {
-    List gameXData, gameYData, gameIsBlackData, gamePNumData;
+    List gameXData, gameYData, gameIsBlackData, gamePNumData, gameFirstMoveData;
     
     public GameplayData() {
         gameXData = new ArrayList();
         gameYData = new ArrayList();
         gameIsBlackData = new ArrayList();
         gamePNumData = new ArrayList();
+        gameFirstMoveData = new ArrayList();
     }
     
     public boolean addMoveDataAndCheckThreefold(Square[][] squares) {
@@ -19,6 +20,7 @@ public class GameplayData implements Serializable {
         int[] yPos = new int[32];
         boolean[] isBlack = new boolean[32];
         int[] pNum = new int[32];
+        boolean[] firstMove = new boolean[32];
         int i = 0;
         
         for(int y = 0; y < 8; y++) {
@@ -29,6 +31,8 @@ public class GameplayData implements Serializable {
                     yPos[i] = tmp.getYPos();
                     isBlack[i] = tmp.isBlack();
                     pNum[i] = tmp.getPieceNumber();
+                    if(tmp.getMoved() < 2) firstMove[i] = false;
+                    else firstMove[i] = true;
                     i++;
                 }
             }

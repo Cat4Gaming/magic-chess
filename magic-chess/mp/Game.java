@@ -179,12 +179,12 @@ public class Game extends JPanel {
         int whitePoints = 0;
         for(int yB = 0; yB < 8; yB++) {
             for(int xB = 0; xB < 8; xB++) {
-                if(square[xB][yB].getChessPiece() != null && square[xB][yB].getChessPiece().isBlack() && square[xB][yB].getChessPiece().isKing() == false && square[xB][yB].getChessPiece().isKnightOrBishop() == false) blackPoints = -10000;
-                if(square[xB][yB].getChessPiece() != null && square[xB][yB].getChessPiece().isBlack() == false && square[xB][yB].getChessPiece().isKing() == false && square[xB][yB].getChessPiece().isKnightOrBishop() == false) whitePoints = -10000;
-                if(square[xB][yB].getChessPiece() != null && square[xB][yB].getChessPiece().isBlack() && square[xB][yB].getChessPiece().isKing()) blackPoints += 5;
-                if(square[xB][yB].getChessPiece() != null && square[xB][yB].getChessPiece().isBlack() == false && square[xB][yB].getChessPiece().isKing()) whitePoints += 5;
-                if(square[xB][yB].getChessPiece() != null && square[xB][yB].getChessPiece().isBlack() && square[xB][yB].getChessPiece().isKnightOrBishop()) blackPoints += 3;
-                if(square[xB][yB].getChessPiece() != null && square[xB][yB].getChessPiece().isBlack() == false && square[xB][yB].getChessPiece().isKnightOrBishop()) whitePoints += 3;
+                if(square[xB][yB].getChessPiece() != null && square[xB][yB].getChessPiece().isBlack() && square[xB][yB].getChessPiece().getPieceNumber() != 5 && square[xB][yB].getChessPiece().getPieceNumber() != 3 && square[xB][yB].getChessPiece().getPieceNumber() != 2) blackPoints = -10000;
+                if(square[xB][yB].getChessPiece() != null && square[xB][yB].getChessPiece().isBlack() == false && square[xB][yB].getChessPiece().getPieceNumber() != 5 && square[xB][yB].getChessPiece().getPieceNumber() != 3 && square[xB][yB].getChessPiece().getPieceNumber() != 2) whitePoints = -10000;
+                if(square[xB][yB].getChessPiece() != null && square[xB][yB].getChessPiece().isBlack() && square[xB][yB].getChessPiece().getPieceNumber() == 5) blackPoints += 5;
+                if(square[xB][yB].getChessPiece() != null && square[xB][yB].getChessPiece().isBlack() == false && square[xB][yB].getChessPiece().getPieceNumber() == 5) whitePoints += 5;
+                if(square[xB][yB].getChessPiece() != null && square[xB][yB].getChessPiece().isBlack() && square[xB][yB].getChessPiece().getPieceNumber() > 1 && square[xB][yB].getChessPiece().getPieceNumber() < 4) blackPoints += 3;
+                if(square[xB][yB].getChessPiece() != null && square[xB][yB].getChessPiece().isBlack() == false && square[xB][yB].getChessPiece().getPieceNumber() > 1 && square[xB][yB].getChessPiece().getPieceNumber() < 4) whitePoints += 3;
             }
         }
         if(blackPoints > 4 && whitePoints > 4) {
@@ -197,7 +197,7 @@ public class Game extends JPanel {
             
         if(selectable) {
             ChessPiece tmp = square[x][y].getChessPiece();
-            if(tmp != null && tmp.isKing()) {
+            if(tmp != null && tmp.getPieceNumber() == 5) {
                 gameFieldStop = true;
                 restartButton.setVisible(true);
                 drawButton.setVisible(false);
@@ -210,11 +210,23 @@ public class Game extends JPanel {
                     saveGame("win-white");
                 }
             }
+
             blackTurn = !blackTurn;
             
             square[selectedChessPiece.getXPos()][selectedChessPiece.getYPos()].setChessPiece(null);
             square[x][y].setChessPiece(selectedChessPiece);
             selectedChessPiece = null;
+            
+            for(int yB = 0; yB < 8; yB++) {
+                for(int xB = 0; xB < 8; xB++) {
+                    ChessPiece temp = square[xB][yB].getChessPiece();
+                    if(temp != null && temp.getPieceNumber() == 5) {
+                        if(((King)temp).detectCheck()) {
+                            System.out.println("Check! - Black:" + temp.isBlack());
+                        }
+                    }
+                }
+            }
             
             setAllUnselected();
             updateUI();
@@ -352,7 +364,7 @@ public class Game extends JPanel {
     
     public void saveGame(String reason) {
         try {
-            FileOutputStream fos = new FileOutputStream("data/games/localmp/" + gameplayData.createFileName() + "-" + reason + ".magic-chess-board");
+            FileOutputStream fos = new FileOutputStream("data/games/localmp/" + reason + "-" + gameplayData.createFileName() + ".magic-chess");
             BufferedOutputStream bos = new BufferedOutputStream(fos);
             ObjectOutputStream oos = new ObjectOutputStream(bos);
             oos.writeObject(gameplayData);

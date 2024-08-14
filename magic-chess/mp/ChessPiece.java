@@ -12,9 +12,6 @@ public abstract class ChessPiece extends JLabel {
     public int getYPos() {return yPos;}
     public int getMoved() {return moved;}
     public boolean isBlack() {return isBlack;}
-    public boolean isKing() {return false;}
-    public boolean isRook() {return false;}
-    public boolean isKnightOrBishop() {return false;}
     public boolean getEnPassant() {return enPassant;}
     public void resetEnPassant() {enPassant = false;}
     public void resetMoved() {moved = 0;}

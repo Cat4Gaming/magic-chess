@@ -14,11 +14,7 @@ public class Bishop extends ChessPiece {
         else setIcon(tmp.resizedImageIcon("assets/gfx/pieces/white/Bishop.png", tmp.getScreenHeight()/10, tmp.getScreenHeight()/10));
     }
     
-    @Override public boolean isKnightOrBishop() {return true;}
-    
     @Override public void showMoves() {
-        int dif = 0;
-        dif = 8-yPos;
         ChessPiece tmp = null;
         for(int y = yPos+1; y < 8; y++) {
             for(int x = 0; x < 8; x++) {
