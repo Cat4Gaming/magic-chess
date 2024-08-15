@@ -4,16 +4,32 @@ import java.awt.*;
 import javax.swing.*;
 import java.io.*;
 
+ /**
+ * Creates the main-menu screen which can be viewed by creating an instance of this class and passing it in as a parameter in the method showView() of the class MainFrame.
+ * 
+ * @author      Andreas Moosbauer (github.com/Cat4Gaming)
+ * @version     1.0.2
+ */
 public class Menu extends JPanel {
-    final private MainFrame owner;
+    private MainFrame owner;
     private Font font;
     
+    /**
+    * Creates the main-menu screen which can be viewed by creating an instance of this class and passing it in as a parameter in the method showView() of the class MainFrame.
+    * 
+    * @param owner It is the owner of this class. It is mainly used to get screen size details and to change the UI view.
+    */
     public Menu(MainFrame owner) {
         super();
         this.owner = owner;
         createGUI();
     }
     
+    /**
+     * Creates an UI which displays the main menu. <br>
+     * This will be displayed to the user after creating an instance of this class. <br>
+     * This method is mandatory for the creation of the UI.
+     */
     private void createGUI() {        
         setBounds(0, 0, owner.getScreenWidth(), owner.getScreenHeight());
         setLayout(new BorderLayout());
@@ -26,7 +42,8 @@ public class Menu extends JPanel {
         JPanel optionPanel = new JPanel();
         optionPanel.setLayout(new BoxLayout(optionPanel, BoxLayout.Y_AXIS));
         optionPanel.setOpaque(false);
-
+        
+        //screen title text:
         try {
             font = Font.createFont(Font.TRUETYPE_FONT, new File("assets/fonts/Yusei_Magic/YuseiMagic-Regular.ttf")).deriveFont(128f);
         } catch(IOException| FontFormatException e) {}
@@ -35,11 +52,12 @@ public class Menu extends JPanel {
         titleText.setFont(font);
         titleText.setForeground(Color.WHITE); 
         titleText.setBorder(BorderFactory.createEmptyBorder(5, 5, 200, 5));
-        
+
+        //Buttons for UI contorl:
         try {
             font = Font.createFont(Font.TRUETYPE_FONT, new File("assets/fonts/Yusei_Magic/YuseiMagic-Regular.ttf")).deriveFont(48f);
         } catch(IOException| FontFormatException e) {}
-
+        
         JButton spButton = new JButton("     " + owner.getTextByTag("singleplayer"));
         spButton.setFocusable(false);
         spButton.setBorder(BorderFactory.createEmptyBorder());
@@ -79,13 +97,15 @@ public class Menu extends JPanel {
         closeButton.addActionListener(event -> {
             owner.dispose();
         });
-
+                
+        //Shows warning in the bottom of the screen if the reatio of the screen is not 16:9 or 16:10 as this can lead to unintended behaviour.
+        //TODO: Change screen resolution automatically it this warning is detected.
+        try {
+            font = Font.createFont(Font.TRUETYPE_FONT, new File("assets/fonts/Yusei_Magic/YuseiMagic-Regular.ttf")).deriveFont(16f);
+        } catch(IOException| FontFormatException e) {}
+        
         int screenRatio = owner.getScreenWidth()*10 / owner.getScreenHeight();
         if(screenRatio < 15 || screenRatio > 18) {   
-            try {
-                font = Font.createFont(Font.TRUETYPE_FONT, new File("assets/fonts/Yusei_Magic/YuseiMagic-Regular.ttf")).deriveFont(16f);
-            } catch(IOException| FontFormatException e) {}
-            
             JLabel warningText = new JLabel(owner.getTextByTag("screenSizeWarning"),  SwingConstants.CENTER);
             warningText.setForeground(Color.ORANGE);
             warningText.setBackground(Color.BLACK);
@@ -93,8 +113,9 @@ public class Menu extends JPanel {
             warningText.setFont(font);
             contentPanel.add(warningText, BorderLayout.PAGE_END);
         }
-
-        optionPanel.add(spButton);
+        
+        //adding the UI elements together:
+        //optionPanel.add(spButton);    //Blocked until singleplayer is impplemented!
         optionPanel.add(mpButton);
         optionPanel.add(settingsButton);
         optionPanel.add(closeButton);

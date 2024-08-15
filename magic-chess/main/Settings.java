@@ -4,12 +4,24 @@ import java.awt.*;
 import javax.swing.*;
 import java.io.*;
 
+/**
+ * This class creates the settings user-interface which can be viewed by creating an instance of this class and passing it in as a parameter in the method showView() of the class MainFrame. <br>
+ * It also enables to store the settings data in one file.
+ * 
+ * @author      Andreas Moosbauer (github.com/Cat4Gaming)
+ * @version     1.2
+ */
 public class Settings extends JPanel {
-    final private MainFrame owner;
+    private MainFrame owner;
     private Font font;
     private int volume;
     private String language;
     
+    /**
+     * Creates the settings screen which can be viewed by creating an instance of this class and passing it in as a parameter in the method showView() of the class MainFrame.
+     * 
+     * @param owner It is the owner of this class. It is mainly used to get screen size details and to change the UI view.
+     */
     public Settings(MainFrame owner) {
         super();
         this.owner = owner;
@@ -18,6 +30,11 @@ public class Settings extends JPanel {
         createGUI();
     }
     
+    /**
+     * Creates an UI which displays all the settings one can change. <br>
+     * This will be displayed to the user after creating an instance of this class. <br>
+     * This method is mandatory for the creation of the UI.
+     */
     private void createGUI() {        
         setBounds(0, 0, owner.getScreenWidth(), owner.getScreenHeight());
         setLayout(new BorderLayout());
@@ -39,6 +56,7 @@ public class Settings extends JPanel {
         languagePanel.setLayout(new BoxLayout(languagePanel, BoxLayout.X_AXIS));
         languagePanel.setOpaque(false);
         
+        //screen title text:
         try {
             font = Font.createFont(Font.TRUETYPE_FONT, new File("assets/fonts/Yusei_Magic/YuseiMagic-Regular.ttf")).deriveFont(128f);
         } catch(IOException| FontFormatException e) {}
@@ -48,6 +66,7 @@ public class Settings extends JPanel {
         titleText.setForeground(Color.WHITE); 
         titleText.setBorder(BorderFactory.createEmptyBorder(5, 5, 200, 5));
         
+        //language setting:
         try {
             font = Font.createFont(Font.TRUETYPE_FONT, new File("assets/fonts/Yusei_Magic/YuseiMagic-Regular.ttf")).deriveFont(48f);
         } catch(IOException| FontFormatException e) {}
@@ -97,6 +116,7 @@ public class Settings extends JPanel {
             }
         });
         
+        //button to apply all settings:
         JButton applyButton = new JButton("             " + owner.getTextByTag("apply"));
         applyButton.setFocusable(false);
         applyButton.setBorder(BorderFactory.createEmptyBorder());
@@ -109,6 +129,7 @@ public class Settings extends JPanel {
             SwingUtilities.invokeLater(() -> owner.showView(new Settings(owner)));
         });
         
+        //button to go back to main menu:
         JButton backButton = new JButton("             " + owner.getTextByTag("back"));
         backButton.setFocusable(false);
         backButton.setBorder(BorderFactory.createEmptyBorder());
@@ -120,6 +141,7 @@ public class Settings extends JPanel {
             SwingUtilities.invokeLater(() -> owner.showView(new Menu(owner)));
         });
         
+        //adding the UI elements together:
         languagePanel.add(leftLanguangeButton);
         languagePanel.add(rightLanguangeButton);
         languagePanel.add(langText);
@@ -135,15 +157,12 @@ public class Settings extends JPanel {
         contentPanel.add(optionPanel, BorderLayout.WEST);
     }
     
-    public void saveSettings() {
-        try {
-            FileOutputStream fos = new FileOutputStream("data/settings.magic-chess");
-            BufferedOutputStream bos = new BufferedOutputStream(fos);
-            ObjectOutputStream oos = new ObjectOutputStream(bos);
-            SettingsData setStor = new SettingsData();
-            setStor.language = language;
-            oos.writeObject(setStor);
-            oos.close();
-        } catch(IOException e) {e.printStackTrace();}
+    /**
+     * Saves all settings in the file: "data/settings.magic-chess"
+     */
+    private void saveSettings() {
+        SettingsData setStor = new SettingsData();
+        setStor.setLanguage(language);
+        setStor.save();
     }
 }
