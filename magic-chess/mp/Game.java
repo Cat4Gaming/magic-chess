@@ -210,23 +210,54 @@ public class Game extends JPanel {
                     saveGame("win-white");
                 }
             }
-
-            blackTurn = !blackTurn;
-            
+                        
             square[selectedChessPiece.getXPos()][selectedChessPiece.getYPos()].setChessPiece(null);
             square[x][y].setChessPiece(selectedChessPiece);
             selectedChessPiece = null;
             
+            if(!gameFieldStop )wonText.setText("");
             for(int yB = 0; yB < 8; yB++) {
                 for(int xB = 0; xB < 8; xB++) {
                     ChessPiece temp = square[xB][yB].getChessPiece();
                     if(temp != null && temp.getPieceNumber() == 5) {
                         if(((King)temp).detectCheck()) {
-                            System.out.println("Check! - Black:" + temp.isBlack());
+                            if(temp.isBlack() == blackTurn) {
+                                boolean tmpD = false;
+                                for(int i = 4; i > 0; i--) {
+                                    for(int yC = 0; yC < 8; yC++) {
+                                        for(int xC = 0; xC < 8; xC++) {
+                                            if(square[xC][yC].getChessPiece() != null && square[xC][yC].getChessPiece().isBlack() == blackTurn && square[xC][yC].getChessPiece().getPieceNumber() == i) {
+                                                square[xC][yC].setSelectable(true);
+                                                square[xC][yC].setChessPiece(null);
+                                                square[xC][yC].setSelectable(false);
+                                                tmpD = true;
+                                                i = -10;
+                                                yC = xC = 10;
+                                            }
+                                        }
+                                    }
+                                }
+                                if(!tmpD) {
+                                    gameFieldStop = true;
+                                    restartButton.setVisible(true);
+                                    drawButton.setVisible(false);
+                                    if(!blackTurn) { 
+                                        wonText.setText(owner.getTextByTag("blackWon"));
+                                        saveGame("checkwin-black");
+                                    }
+                                    else { 
+                                        wonText.setText(owner.getTextByTag("whiteWon"));
+                                        saveGame("checkwin-white");
+                                    }
+                                }
+                            }
+                        else wonText.setText(owner.getTextByTag("inCheck"));
                         }
                     }
                 }
             }
+            
+            blackTurn = !blackTurn;
             
             setAllUnselected();
             updateUI();

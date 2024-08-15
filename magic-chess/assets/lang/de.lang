@@ -20,4 +20,5 @@
 	<language>Sprache</language>
 	<drawAgree>Unentschieden zustimmen</drawAgree>
 	<drawGame>Unentschieden</drawGame>
+	<inCheck>Schach!</inCheck>
 </dico>

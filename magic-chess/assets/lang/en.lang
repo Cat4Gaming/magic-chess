@@ -20,4 +20,5 @@
 	<language>Language</language>
 	<drawAgree>Agree to Draw</drawAgree>
 	<drawGame>Draw</drawGame>
+	<inCheck>Check!</inCheck>
 </dico>

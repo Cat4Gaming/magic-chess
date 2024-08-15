@@ -57,16 +57,4 @@ public class GameplayData implements Serializable {
         String s = (ld + "-time-" + lt);
         return s.replace(":", "-");
     }
-    
-    private class CP {
-        int CPx, CPy, CPpNum;
-        boolean CPisBlack;
-        
-        public CP(int x, int y, boolean isBlack, int pNum) {
-            CPx = x;
-            CPy = y;
-            CPisBlack = isBlack;
-            CPpNum = pNum;
-        }
-    }
 }
